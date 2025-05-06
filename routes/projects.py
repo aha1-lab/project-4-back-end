@@ -23,6 +23,7 @@ def create_project():
         return jsonify({"error": str(e)}), 400
 
 
+
 @projects.route('/', methods=['GET'])
 @token_required
 def get_projects():
