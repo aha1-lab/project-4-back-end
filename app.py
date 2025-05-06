@@ -5,18 +5,29 @@ from models import db, ma
 from dotenv import load_dotenv
 import os
 import jwt
+from werkzeug.utils import secure_filename
 
 load_dotenv()
+
+UPLOAD_FOLDER = 'static/uploads'
+
+ALLOWED_EXTENTIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENTIONS
 
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 db.init_app(app)
 ma.init_app(app)
 bcrypt.init_app(app)
+
 
 app.register_blueprint(users, url_prefix='/users')
 app.register_blueprint(projects, url_prefix='/projects')
@@ -42,6 +53,50 @@ def verify_token():
     except Exception as err:
        return jsonify({"err": err.message})
 
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'files[]' not in request.files:
+        response = jsonify({
+            "status": "error",
+            "message": "No file part in the request"
+        })
+        response.status_code = 400
+        return response
+    
+    files = request.files.getlist('files[]')
+
+    errors = {}
+    success = False
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            success = True
+        else:
+            response = jsonify({
+                "status": "error",
+                "message": "File type not allowed"
+            })
+
+    if success and errors:
+        errors['message'] = 'File(s) successfully uploaded'
+        errors['status'] = 'failed'
+        response = jsonify(errors)
+        response.status_code = 500
+        return response
+    if success:
+        response = jsonify({
+            "message": "File(s) successfully uploaded",
+            "status": "success",
+        })
+        response.status_code = 201
+        return response
+    else:
+        response = jsonify(errors)
+        response.status_code = 500
+        return response
+    
 
 if __name__ == '__main__':
     with app.app_context():
