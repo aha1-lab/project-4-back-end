@@ -1,8 +1,12 @@
 from flask import Blueprint, request, jsonify
-from models.projects import db, Project, ProjectType, project_schema, projects_schema
+from models import db, Project, ProjectType, project_schema, projects_schema
+from auth_middleware import token_required
+
+
 projects = Blueprint('projects', __name__)
 
 @projects.route('/', methods=['POST'])
+@token_required
 def create_project():
     try:
         data = request.get_json()
@@ -20,6 +24,7 @@ def create_project():
 
 
 @projects.route('/', methods=['GET'])
+@token_required
 def get_projects():
     try:
         projects = Project.query.all()
@@ -28,6 +33,7 @@ def get_projects():
         return jsonify({"error": str(e)}), 400
     
 @projects.route('/<int:id>', methods=['GET'])
+@token_required
 def get_project(id):
     try:
         project = Project.query.get_or_404(id)
@@ -36,6 +42,7 @@ def get_project(id):
         return jsonify({"error": str(e)}), 400
 
 @projects.route('/<int:id>', methods=['PUT'])
+@token_required
 def update_project(id):
     try:
         data = request.get_json()
@@ -52,6 +59,7 @@ def update_project(id):
         return jsonify({"error": str(e)}), 400
     
 @projects.route('/<int:id>', methods=['DELETE'])
+@token_required
 def delete_project(id):
     try:
         project = Project.query.get_or_404(id)

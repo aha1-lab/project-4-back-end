@@ -1,3 +1,5 @@
+from .base import db, ma
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -8,3 +10,13 @@ class User(db.Model):
         self.username = username
         self.password = password
         self.email = email
+    
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
+
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'username', 'email')
+
+
+user_schema = UserSchema()

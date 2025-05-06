@@ -1,10 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_marshmallow import Marshmallow
+from .base import db, ma
 from enum import Enum
 
-db = SQLAlchemy()
-ma = Marshmallow()
 
 
 class ProjectType(Enum):
