@@ -1,5 +1,5 @@
 from .projects import projects
 from .users import users, bcrypt
-from .imageUpload import imagesUpload
+from .annotation import annotation
 
-__all__ = ['projects', 'users', 'bcrypt', 'imagesUpload']
+__all__ = ['projects', 'users', 'bcrypt', 'annotation']
