@@ -2,13 +2,9 @@ from flask import Blueprint, request, jsonify, g
 from models import Image, Annotation, annotation_schema, annotations_schema, db
 from auth_middleware import token_required
 from werkzeug.utils import secure_filename
-from flask_cors import cross_origin
+annotationRoute = Blueprint('Annotation', __name__)
 
-annotation = Blueprint('Annotation', __name__)
-
-
-
-@annotation.route('/annotations', methods=['POST', 'OPTIONS'])
+@annotationRoute.route('/', methods=['POST', 'OPTIONS'])
 def addAnnotation():
     if request.method == 'OPTIONS':
         return '', 204
@@ -20,9 +16,8 @@ def addAnnotation():
                                x2=data['x2'],
                                y2=data['y2'],
                                imageId=data['imageId'],
-                               className=data['className'],
-                               classId=data['classId'],
-                               color=data['color'])
+                               classId=data['classId']
+                               )
         
         db.session.add(new_annotation)
         db.session.commit()
@@ -32,7 +27,7 @@ def addAnnotation():
         return jsonify({"error": str(e)}), 400
 
 
-@annotation.route('/<int:imageId>', methods=['GET'])
+@annotationRoute.route('/<int:imageId>', methods=['GET'])
 def getAnnotation(imageId):
     try:
         currentAnnoptation = Annotation.query.filter_by(imageId=imageId).all()
@@ -40,7 +35,7 @@ def getAnnotation(imageId):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-@annotation.route('/<int:annotationId>', methods=['DELETE'])
+@annotationRoute.route('/<int:annotationId>', methods=['DELETE'])
 def deleteAnnotation(annotationId):
     try:
         currentAnnotation = Annotation.query.get_or_404(annotationId)

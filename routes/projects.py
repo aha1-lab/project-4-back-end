@@ -82,7 +82,7 @@ def delete_project(id):
 
 
 @projects.route('/<int:projectId>/images', methods=['GET'])
-# @token_required
+@token_required
 def getProjectImage(projectId):
     try:
         images = Image.query.filter_by(projectId=projectId)
@@ -103,15 +103,15 @@ def make_unique_filename(filename):
     return f"{base}_{timestamp}_{rand_str}{ext}"
 
 @projects.route('/<int:projectId>/images', methods=['POST'])
-# @token_required
+@token_required
 def postProjectImage(projectId):
     project = Project.query.get(projectId)
     if not project:
         return jsonify({"status": "error", "message": "Project not found"}), 404
     
     userProjectPath = f"{project.user_id}/{projectId}"
-    upload_folder = current_app.config['UPLOAD_FOLDER']
-    path = os.path.join(upload_folder, userProjectPath)
+    uploadFolder = current_app.config['UPLOAD_FOLDER']
+    path = os.path.join(uploadFolder, userProjectPath)
     
     if not os.path.exists(path):
         os.makedirs(path)

@@ -16,6 +16,7 @@ class Project(db.Model):
     type = db.Column(db.Enum(ProjectType), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     images = db.relationship('Image', backref='project', lazy=True)
+    classes = db.relationship('Classes', backref='project', lazy=True)
 
     def __init__(self, name, description, type, user_id):
         self.user_id = user_id
