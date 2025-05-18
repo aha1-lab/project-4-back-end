@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, g
 import os
-from routes import projects, users, bcrypt, annotationRoute, classes
+from routes import projects, users, bcrypt, annotationRoute, classes, aiAnnotator
 from models import db, ma
 from dotenv import load_dotenv
 import os
@@ -29,6 +29,7 @@ app.register_blueprint(annotationRoute, url_prefix='/annotations')
 app.register_blueprint(users, url_prefix='/users')
 app.register_blueprint(projects, url_prefix='/projects')
 app.register_blueprint(classes, url_prefix='/classes')
+app.register_blueprint(aiAnnotator, url_prefix='/aiAnnotator')
 
 
 @app.route('/sign-token', methods=['GET'])

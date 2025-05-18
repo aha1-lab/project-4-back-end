@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, g
-from models import db, Project, ProjectType, project_schema, projects_schema, Image, Images_schema
+from models import db, Project, ProjectType, project_schema, projects_schema, Image, Images_schema, Image_schema
 from auth_middleware import token_required
 from werkzeug.utils import secure_filename
 import os 
@@ -83,13 +83,25 @@ def delete_project(id):
 
 @projects.route('/<int:projectId>/images', methods=['GET'])
 @token_required
-def getProjectImage(projectId):
+def ProjectImage(projectId):
     try:
         images = Image.query.filter_by(projectId=projectId)
         return Images_schema.jsonify(images), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@projects.route('/<int:projectId>/images/<int:imageId>', methods=['Delete'])
+@token_required
+def deleteImage(projectId, imageId):
+    try:
+        images = Image.query.get_or_404(imageId)
+        print(images)
+        db.session.delete(images)
+        db.session.commit()
+        return Image_schema.jsonify(images), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
 
 ALLOWED_EXTENTIONS = {'png', 'jpg', 'jpeg'}
 def allowed_file(filename):
