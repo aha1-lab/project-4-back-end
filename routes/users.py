@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
-from models.users import db, user_schema, User
+from models import db, user_schema, User
 import os
 import jwt
 from dotenv import load_dotenv
+from auth_middleware import token_required
+
 load_dotenv()
 
 from flask_bcrypt import Bcrypt
@@ -18,6 +20,8 @@ def sign_up():
         newUser = User(
             username=data['username'],
             email=data['email'],
+            firstName=data['firstName'],
+            lastName=data['lastName'],
             password=hashPassword)
         
         db.session.add(newUser)
@@ -49,6 +53,7 @@ def sign_in():
         return jsonify({"error": str(e)}), 400
 
 @users.route('/', methods=['GET'])
+@token_required
 def get_all_users():
     try:
         users = User.query.all()
