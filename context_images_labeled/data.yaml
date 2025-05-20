@@ -1,0 +1,6 @@
+names:
+- a square washer
+- a long steel bolt
+nc: 2
+train: C:\Users\abdll\OneDrive\026.generalAssembly\ga\code\projects\unit-4-project\project-4-back-end\context_images_labeled/train/images
+val: C:\Users\abdll\OneDrive\026.generalAssembly\ga\code\projects\unit-4-project\project-4-back-end\context_images_labeled/valid/images
